@@ -29,8 +29,12 @@ class TemplateController:
 
     @classmethod
     @exception_handler
-    def delete_template(self, user_id: int, template_id: int) -> None:
-        pass
+    def delete_template(cls, template_id: int) -> None:
+        db.delete(
+            table='template',
+            row_id=template_id
+        )
+
 
     @classmethod
     @exception_handler
