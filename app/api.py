@@ -1,9 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from users import UserController
-from typing import Union
-from pydantic import BaseModel
-from templates import TemplateController
+from users import UserController, User
+from templates import TemplateController, Template
 
 app = FastAPI()
 
@@ -25,22 +23,19 @@ def read_root():
 # Users block #
 ###############
 
-class User(BaseModel):
-    id: Union[int, None]
-    name: Union[int, None]
-    telegram_id: Union[int, None]
-
 @app.get("/users")
 def read_users():
     return UserController.get_users()
 
-@app.post("/users/delete/{user_id}")
-def delete_user(user: User):
+@app.get("/users/{user_id}")
+def get_user(user_id: int):
     try:
-        UserController.delete_user(user.id)
-        return 200
+        return UserController.get_user_info(user_id)
     except Exception as e:
-        return [e, 500]
+        return {
+            'http_code': 500,
+            'error': e
+        }
 
 @app.post("/users/add")
 def add_user(user: User):
@@ -51,16 +46,14 @@ def add_user(user: User):
             id=user.id)
         return 200
     except Exception as e:
-        return [e, 500]
+        return {
+            'http_code': 500,
+            'error': e
+        }
 
 ###################
 # Templates block #
 ###################
-
-class Template(BaseModel):
-    name: str
-    body: str
-    user_id: int
 
 @app.get("/templates/{user_id}")
 def read_templates(user_id: int):
@@ -72,4 +65,11 @@ def add_template(template: Template):
         TemplateController.add_template(template.user_id, template.name, template.body)
         return template
     except Exception as e:
-        return [e, 500]
+        return {
+            'http_code': 500,
+            'error': e
+        }
+
+@app.post("/templates/delete/{template_id}")
+def read_templates(template_id: int):
+    return TemplateController.delete_template(template_id)

@@ -1,7 +1,14 @@
 from db import db
 from exceptions import TemplateException
 from functools import wraps
+from pydantic import BaseModel
+from typing import Union, List
 
+class Template(BaseModel):
+    id: Union[int, None]
+    name: str
+    body: str
+    user_id: Union[int, None]
 
 class TemplateController:
     """ Класс для работы с шаблонами """
@@ -41,8 +48,20 @@ class TemplateController:
     def get_user_templates(cls, user_id: int):
         user_templates = db.fetch_by_param(
             table='template',
-            columns=['id', 'name', 'body'],
+            columns=['id', 'name', 'body', 'user_id'],
             param='user_id',
             value=user_id
         )
-        return user_templates
+
+        if user_templates is None:
+            return None
+        
+        result = []
+        for template in user_templates:
+            result.append(Template(
+                id=template['id'],
+                name=template['name'],
+                body=template['body'],
+                user_id=template['user_id']
+            ))
+        return result

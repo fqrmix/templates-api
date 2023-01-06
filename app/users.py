@@ -1,5 +1,12 @@
 from db import db
 from functools import wraps
+from pydantic import BaseModel
+from typing import Union
+
+class User(BaseModel):
+    id: Union[int, None]
+    name: Union[str, None]
+    telegram_id: Union[int, None]
 
 class UserController:
     """ Класс для работы с пользователями """
@@ -22,14 +29,26 @@ class UserController:
 
     @classmethod
     @exception_handler
-    def add_user(cls, name: str, telegram_id: int, id = None) -> None:
-        column_values = \
-            {
-                'name': name,
-                'telegram_id': telegram_id
-            }\
-            if id is None else\
-            {
+    def get_user_info(cls, id: int) -> Union[User, None]:
+        user = db.fetch_by_param(
+            table='user',
+            columns=['id', 'name', 'telegram_id'],
+            param='id',
+            value=id
+        )
+        if user == []:
+            return None
+
+        return User(
+            id=user[0]['id'],
+            name=user[0]['name'],
+            telegram_id=user[0]['telegram_id']
+        )
+
+    @classmethod
+    @exception_handler
+    def add_user(cls, name: str, telegram_id: int, id: int) -> None:
+        column_values = {
                 'id': int(id),
                 'name': name,
                 'telegram_id': telegram_id
