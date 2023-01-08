@@ -4,10 +4,6 @@ from functools import wraps
 from exceptions import DatabaseException
 import threading
 
-
-
-
-
 class Database:
     """ Класс для работы с БД """
     def exception_handler(method):
