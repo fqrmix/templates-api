@@ -1,7 +1,6 @@
 create table user(
     id integer primary key,
-    name varchar(255),
-    telegram_id integer
+    name varchar(255)
 );
 
 create table template(

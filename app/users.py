@@ -6,7 +6,6 @@ from typing import Union
 class User(BaseModel):
     id: Union[int, None]
     name: Union[str, None]
-    telegram_id: Union[int, None]
 
 class UserController:
     """ Класс для работы с пользователями """
@@ -24,7 +23,7 @@ class UserController:
     def get_users(cls):
         return db.fetch_all(
             table='user',
-            columns=['id', 'name', 'telegram_id']
+            columns=['id', 'name']
         )
 
     @classmethod
@@ -32,7 +31,7 @@ class UserController:
     def get_user_info(cls, id: int) -> Union[User, None]:
         user = db.fetch_by_param(
             table='user',
-            columns=['id', 'name', 'telegram_id'],
+            columns=['id', 'name'],
             param='id',
             value=id
         )
@@ -41,17 +40,15 @@ class UserController:
 
         return User(
             id=user[0]['id'],
-            name=user[0]['name'],
-            telegram_id=user[0]['telegram_id']
+            name=user[0]['name']
         )
 
     @classmethod
     @exception_handler
-    def add_user(cls, name: str, telegram_id: int, id: int) -> None:
+    def add_user(cls, name: str, id: int) -> None:
         column_values = {
                 'id': int(id),
-                'name': name,
-                'telegram_id': telegram_id
+                'name': name
             }
         db.insert(
             table='user',
