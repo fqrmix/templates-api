@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from users import UserController, User
 from templates import TemplateController, Template
@@ -16,8 +16,8 @@ app.add_middleware(
 )
 
 @app.get("/")
-def read_root():
-    return {"Hello": "World"}
+def read_main(request: Request):
+    return {"message": "Hello World", "root_path": request.scope.get("root_path")}
 
 ###############
 # Users block #
